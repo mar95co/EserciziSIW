@@ -5,5 +5,4 @@ public class Prova {
 		System.out.println("Questa è una prova per github");
 		System.out.println("Modificato!");
 	}
-
 }

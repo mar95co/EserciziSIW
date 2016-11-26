@@ -1,0 +1,13 @@
+@CHARSET "ISO-8859-1";
+
+.intestazione {
+	background-color: green;
+}
+
+#header1_2 {
+	background-color: yellow;
+}
+
+div p {
+	background-color: gray;
+}
