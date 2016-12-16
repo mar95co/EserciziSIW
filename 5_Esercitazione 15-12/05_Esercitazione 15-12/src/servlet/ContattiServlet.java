@@ -4,29 +4,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import logic.Contatto;
 
 public class ContattiServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	private List<Contatto> contatti;
+//	private List<Contatto> contatti;
 
-	public ContattiServlet() {
-		contatti = new ArrayList<Contatto>();
-	}
-	
 	@Override
 	public void init() throws ServletException {
-		// TODO Auto-generated method stub
-		super.init();
-		
+//		contatti = new ArrayList<Contatto>();		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -41,6 +38,14 @@ public class ContattiServlet extends HttpServlet {
 		
 		final StringBuilder builder = new StringBuilder();
 		builder.append(apriTable);
+		
+		HttpSession session = req.getSession();
+		List<Contatto> contatti = (List<Contatto>) session.getAttribute("contatti");
+		if (contatti == null) {
+			contatti = new ArrayList<Contatto>();
+			session.setAttribute("contatti", contatti);
+		}
+		
 		for (Contatto e : contatti) {
 			builder.append(apriTr + apriTd + e.getNome() + chiudiTd);
 			builder.append(apriTd + e.getCognome() + chiudiTd);
@@ -51,6 +56,7 @@ public class ContattiServlet extends HttpServlet {
 		resp.getWriter().println(builder);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -58,8 +64,16 @@ public class ContattiServlet extends HttpServlet {
 		final String cognome = req.getParameter("cognome");
 		final String telefono = req.getParameter("telefono");
 		final String email = req.getParameter("email");
-		contatti.add(new Contatto(nome, cognome, telefono, email));
-		resp.setContentType("text/html");
-		resp.getWriter().println(nome + "<br>" + cognome + "<br>" + telefono + "<br>" + email + "<br>");
+		final Contatto c = new Contatto(nome, cognome, telefono, email);
+//		contatti.add(new Contatto(nome, cognome, telefono, email));
+		HttpSession session = req.getSession();
+		List<Contatto> contatti = (List<Contatto>) session.getAttribute("contatti");
+		if (contatti == null) {
+			contatti = new ArrayList<Contatto>();
+			session.setAttribute("contatti", contatti);
+		}
+		contatti.add(c);
+		final RequestDispatcher view = req.getRequestDispatcher("contatti.html");
+		view.forward(req, resp);
 	}
 }
